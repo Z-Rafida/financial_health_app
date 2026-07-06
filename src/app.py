@@ -3,8 +3,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from predict import load_model, predict_single, predict_batch
-from config import MODEL_PATH, TARGET_CLASSES
+from src.predict import load_model, predict_single, predict_batch
+from src.config import MODEL_PATH, TARGET_CLASSES
 
 st.set_page_config(page_title='SME Financial Health Predictor', layout='wide')
 st.title('SME Financial Health Predictor')
@@ -26,6 +26,7 @@ with tab1:
     with col1:
         country        = st.selectbox('Country', ['eswatini', 'lesotho', 'zimbabwe', 'malawi'])
         owner_age      = st.number_input('Owner Age', 18, 80, 35)
+        owner_sex      = st.selectbox('Owner Gender', ['Male', 'Female'])
         business_age_years = st.number_input('Business Age (Years)', 0, 50, 5)
         business_turnover  = st.number_input('Monthly Turnover', 0.0, 1000000.0, 5000.0)
         business_expenses  = st.number_input('Monthly Expenses', 0.0, 500000.0, 3000.0)
@@ -38,20 +39,18 @@ with tab1:
         has_insurance    = st.selectbox('Has Insurance?', ['Yes', 'No'])
         keeps_financial_records = st.selectbox('Keeps Financial Records?', ['Yes', 'No'])
         compliance_income_tax   = st.selectbox('Pays Income Tax?', ['Yes', 'No'])
-
     with col3:
         problem_sourcing_money = st.selectbox('Problem Accessing Finance?', ['Yes', 'No'])
         current_problem_cash_flow = st.selectbox('Cash Flow Problem?', ['Yes', 'No'])
         uses_informal_lender   = st.selectbox('Uses Informal Lender?', ['Yes', 'No', 'Never had'])
         attitude_worried_shutdown = st.selectbox('Worried Business Will Close?', ['Yes', 'No'])
         attitude_more_successful_next_year = st.selectbox('Expects More Success Next Year?', ['Yes', 'No'])
-        
-
 
     if st.button('Assess Financial Health', type='primary'):
         input_data = {
-            'country': country, 'owner_age': owner_age, 
+            'country': country, 'owner_age': owner_age, 'owner_sex': owner_sex,
             'business_age_years': business_age_years,
+            'business_age_months': business_age_years * 12,
             'business_turnover': business_turnover, 'business_expenses': business_expenses,
             'personal_income': personal_income, 'has_mobile_money': has_mobile_money,
             'has_cellphone': has_cellphone, 'has_credit_card': has_credit_card,
@@ -63,6 +62,18 @@ with tab1:
             'uses_informal_lender': uses_informal_lender,
             'attitude_worried_shutdown': attitude_worried_shutdown,
             'attitude_more_successful_next_year': attitude_more_successful_next_year,
+            'attitude_stable_business_environment': 'Yes',
+            'perception_insurance_doesnt_cover_losses': 'No',
+            'perception_cannot_afford_insurance': 'No',
+            'motor_vehicle_insurance': 'No', 'covid_essential_service': 'No',
+            'attitude_satisfied_with_achievement': 'Yes',
+            'perception_insurance_companies_dont_insure_businesses_like_yours': 'No',
+            'perception_insurance_important': 'Yes', 'offers_credit_to_customers': 'No',
+            'attitude_satisfied_with_achievement': 'Yes', 'has_internet_banking': 'No',
+            'has_debit_card': 'No', 'future_risk_theft_stock': 'No',
+            'medical_insurance': 'No', 'funeral_insurance': 'No',
+            'motivation_make_more_money': 'Yes', 'uses_friends_family_savings': 'No',
+            'marketing_word_of_mouth': 'Yes'
         }
         result = predict_single(model, input_data)
         st.divider()
