@@ -3,8 +3,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
-from src.predict import load_model, predict_single, predict_batch
-from src.config import MODEL_PATH, TARGET_CLASSES
+from predict import load_model, predict_single, predict_batch
+from config import MODEL_PATH, TARGET_CLASSES
 
 st.set_page_config(page_title='SME Financial Health Predictor', layout='wide')
 st.title('SME Financial Health Predictor')
